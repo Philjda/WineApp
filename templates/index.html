@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Prédiction de la qualité du vin 🍷</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: #800000;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #800000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .result {
+            background-color: #fff0f0;
+            border: 1px solid #e0b4b4;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🧪 Prédiction de la qualité du vin</h2>
+    <form method="post">
+        <label for="fixed_acidity">Acidité fixe :</label>
+        <input type="number" step="any" name="fixed_acidity" placeholder="ex: 7.4" required>
+
+        <label for="volatile_acidity">Acidité volatile (vinaigre) :</label>
+        <input type="number" step="any" name="volatile_acidity" placeholder="ex: 0.70" required>
+
+        <label for="citric_acid">Acide citrique (acidité douce) :</label>
+        <input type="number" step="any" name="citric_acid" placeholder="ex: 0.00" required>
+
+        <label for="residual_sugar">Sucres résiduels (g/L) :</label>
+        <input type="number" step="any" name="residual_sugar" placeholder="ex: 1.9" required>
+
+        <label for="chlorides">Chlorures (sel) :</label>
+        <input type="number" step="any" name="chlorides" placeholder="ex: 0.076" required>
+
+        <label for="free_sulfur_dioxide">Soufre libre (mg/L) :</label>
+        <input type="number" step="any" name="free_sulfur_dioxide" placeholder="ex: 11.0" required>
+
+        <label for="total_sulfur_dioxide">Soufre total (mg/L) :</label>
+        <input type="number" step="any" name="total_sulfur_dioxide" placeholder="ex: 34.0" required>
+
+        <label for="density">Densité :</label>
+        <input type="number" step="any" name="density" placeholder="ex: 0.9978" required>
+
+        <label for="pH">pH :</label>
+        <input type="number" step="any" name="pH" placeholder="ex: 3.51" required>
+
+        <label for="sulphates">Sulfates (conservateurs) :</label>
+        <input type="number" step="any" name="sulphates" placeholder="ex: 0.56" required>
+
+        <label for="alcohol">Teneur en alcool (%) :</label>
+        <input type="number" step="any" name="alcohol" placeholder="ex: 9.4" required>
+
+        <button type="submit">Prédire la qualité 🍷</button>
+    </form>
+
+    {% if prediction is not none %}
+        <div class="result">
+            <h3>Qualité prédite du vin : {{ prediction }} / 10</h3>
+        </div>
+    {% endif %}
+
+
+{% if prediction is not none %}
+    <h3>Qualité prédite : {{ prediction }}</h3>
+
+    <canvas id="radarChart" width="400" height="400"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('radarChart').getContext('2d');
+
+        const radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    "Fixed Acidity", "Volatile Acidity", "Citric Acid", "Residual Sugar",
+                    "Chlorides", "Free SO₂", "Total SO₂", "Density", "pH", "Sulphates", "Alcohol"
+                ],
+                datasets: [{
+                    label: 'Valeurs saisies',
+                    data: [
+                        {{ request.form.get("fixed_acidity", 0) }},
+                        {{ request.form.get("volatile_acidity", 0) }},
+                        {{ request.form.get("citric_acid", 0) }},
+                        {{ request.form.get("residual_sugar", 0) }},
+                        {{ request.form.get("chlorides", 0) }},
+                        {{ request.form.get("free_sulfur_dioxide", 0) }},
+                        {{ request.form.get("total_sulfur_dioxide", 0) }},
+                        {{ request.form.get("density", 0) }},
+                        {{ request.form.get("pH", 0) }},
+                        {{ request.form.get("sulphates", 0) }},
+                        {{ request.form.get("alcohol", 0) }}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endif %}
+
+</body>
+</html>
+
